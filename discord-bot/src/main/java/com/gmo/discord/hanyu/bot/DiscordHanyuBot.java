@@ -32,9 +32,11 @@ import sx.blah.discord.util.RateLimitException;
  * @author tedelen
  */
 public class DiscordHanyuBot {
-    private static final String PREFIX = "!";
+    private static final String DEFAULT_PREFIX = "!";
     private static IDiscordClient client;
+
     private final List<ICommand> commandList;
+    private final String prefix;
 
     public static void main(String[] args) throws DiscordException, RateLimitException {
         final String token = System.getenv("HANYU_BOT_TOKEN");
@@ -46,14 +48,23 @@ public class DiscordHanyuBot {
                 .withHttpClient(HttpClientBuilder.create().build())
                 .build();
 
+        String prefix = DEFAULT_PREFIX;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equalsIgnoreCase("--prefix") && i+1 < args.length) {
+                prefix = args[i+1];
+                break;
+            }
+        }
+
         System.out.println("Logging bot in...");
         client = new ClientBuilder().withToken(token).build();
-        client.getDispatcher().registerListener(new DiscordHanyuBot(api));
+        client.getDispatcher().registerListener(new DiscordHanyuBot(api, prefix));
         client.login();
     }
 
-    public DiscordHanyuBot(final TranslatorTextApi translatorTextApi) {
+    public DiscordHanyuBot(final TranslatorTextApi translatorTextApi, final String prefix) {
         this.commandList = ImmutableList.of(new TranslateCommand(translatorTextApi));
+        this.prefix = prefix;
     }
 
     @EventSubscriber
@@ -75,8 +86,8 @@ public class DiscordHanyuBot {
 
         final String[] split = message.getContent().split(" ");
 
-        if (split.length >= 1 && split[0].startsWith(PREFIX)) {
-            String command = split[0].replaceFirst(PREFIX, "");
+        if (split.length >= 1 && split[0].startsWith(prefix)) {
+            String command = split[0].replaceFirst(prefix, "");
             String[] args = split.length >= 2 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
 
             final CommandInfo commandInfo = CommandInfo.newBuilder()

@@ -3,6 +3,7 @@ package com.gmo.discord.hanyu.bot.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -20,12 +21,15 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * -translate en 汉语
+ * !translate en 汉语
+ *
  * @author tedelen
  */
 public class TranslateCommand implements ICommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(TranslateCommand.class);
     private static final Set<String> ALIASES = ImmutableSet.of("translate", "t", "tranny");
+    private static final Set<String> PEENLESS_ALIASES = ImmutableSet.of("peenless", "pl", "no-pinyin", "np");
+
     private static final int MAX_LENGTH = 200;
 
     private final TranslatorTextApi translateApi;
@@ -44,20 +48,31 @@ public class TranslateCommand implements ICommand {
         if (!canHandle(commandInfo)) {
             throw new IllegalArgumentException("Invalid command, must call canHandle first");
         }
+
         if (commandInfo.getArgs().length < 1) {
             return help();
         }
 
-        final String textToTranslate = Joiner.on(" ").join(commandInfo.getArgs());
+        final boolean peenless = PEENLESS_ALIASES.contains(commandInfo.getArg(0).orElse("").toLowerCase());
+        final String[] textArgs = peenless
+                ? Arrays.copyOfRange(commandInfo.getArgs(), 1, commandInfo.getArgs().length)
+                : commandInfo.getArgs();
+
+        final String textToTranslate = Joiner.on(" ").join(textArgs);
         if (textToTranslate.length() > MAX_LENGTH) {
             return HanyuMessage.newBuilder()
                     .withText(String.format("Message of length %d exceeds max length %d", textToTranslate.length(), MAX_LENGTH))
                     .build();
         }
 
-        final TranslationRequest request = TranslationRequest.newBuilder()
-                .withText(textToTranslate)
-                .addDestinationLanguage("zh-Latn")
+        final TranslationRequest.Builder requestBuilder = TranslationRequest.newBuilder()
+                .withText(textToTranslate);
+
+        if (!peenless) {
+            requestBuilder.addDestinationLanguage("zh-Latn");
+        }
+
+        final TranslationRequest request = requestBuilder
                 .addDestinationLanguage("zh-Hans")
                 .addDestinationLanguage("en")
                 .build();
@@ -85,7 +100,7 @@ public class TranslateCommand implements ICommand {
     @Override
     public HanyuMessage help() {
         return HanyuMessage.newBuilder()
-                .withText("```Usage: -translate <text>\nExample: -translate 你好```")
+                .withText("```Usage: !translate <text>\nExample: -translate 你好```")
                 .build();
     }
 }
