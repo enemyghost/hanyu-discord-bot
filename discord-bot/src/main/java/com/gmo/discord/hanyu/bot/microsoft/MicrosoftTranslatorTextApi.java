@@ -19,12 +19,11 @@ import org.apache.http.entity.StringEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.gmo.discord.hanyu.bot.api.DetectionResponse;
-import com.gmo.discord.hanyu.bot.api.DictionaryLookupResponse;
-import com.gmo.discord.hanyu.bot.api.TranslationRequest;
-import com.gmo.discord.hanyu.bot.api.TranslationResponse;
+import com.gmo.discord.hanyu.bot.api.entities.DetectionResponse;
+import com.gmo.discord.hanyu.bot.api.entities.DictionaryLookupResponse;
+import com.gmo.discord.hanyu.bot.api.entities.TranslationRequest;
+import com.gmo.discord.hanyu.bot.api.entities.TranslationResponse;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.io.CharStreams;
 

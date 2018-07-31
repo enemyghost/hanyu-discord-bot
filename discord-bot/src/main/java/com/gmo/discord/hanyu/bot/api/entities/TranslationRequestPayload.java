@@ -1,4 +1,4 @@
-package com.gmo.discord.hanyu.bot.api;
+package com.gmo.discord.hanyu.bot.api.entities;
 
 import java.util.Objects;
 

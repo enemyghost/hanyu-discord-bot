@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import com.gmo.discord.hanyu.bot.api.RetryingTranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
 import com.gmo.discord.hanyu.bot.command.CommandInfo;
 import com.gmo.discord.hanyu.bot.command.ICommand;
@@ -44,8 +45,10 @@ public class DiscordHanyuBot {
             throw new IllegalStateException("Could not get bot token");
         }
 
-        final TranslatorTextApi api = MicrosoftTranslatorTextApi.newBuilder()
-                .withHttpClient(HttpClientBuilder.create().build())
+        final TranslatorTextApi api = RetryingTranslatorTextApi.newBuilder()
+                .withDelegate(MicrosoftTranslatorTextApi.newBuilder()
+                        .withHttpClient(HttpClientBuilder.create().build())
+                        .build())
                 .build();
 
         String prefix = DEFAULT_PREFIX;

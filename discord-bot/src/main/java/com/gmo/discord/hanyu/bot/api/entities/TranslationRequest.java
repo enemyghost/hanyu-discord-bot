@@ -1,4 +1,4 @@
-package com.gmo.discord.hanyu.bot.api;
+package com.gmo.discord.hanyu.bot.api.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 /**
  * @author tedelen

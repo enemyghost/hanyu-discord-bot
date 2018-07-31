@@ -10,6 +10,9 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmo.discord.hanyu.bot.api.entities.Translation;
+import com.gmo.discord.hanyu.bot.api.entities.TranslationResponse;
+import com.gmo.discord.hanyu.bot.api.entities.Transliteration;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
