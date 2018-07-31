@@ -5,15 +5,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
  * @author tedelen
  */
 public class TranslationRequest {
-    private final String text;
+    private final List<TranslationRequestPayload> text;
     private final List<String> destinationLanguages;
     private final String sourceLanguage;
 
@@ -27,7 +30,7 @@ public class TranslationRequest {
         return new Builder();
     }
 
-    public String getText() {
+    public List<TranslationRequestPayload> getText() {
         return text;
     }
 
@@ -66,16 +69,22 @@ public class TranslationRequest {
     }
 
     public static final class Builder {
-        private String text;
+        private List<TranslationRequestPayload> text;
         private List<String> destinationLanguages;
         private String sourceLanguage;
 
         private Builder() {
+            text = new ArrayList<>();
             destinationLanguages = new ArrayList<>();
         }
 
-        public Builder withText(final String text) {
-            this.text = text;
+        public Builder addText(final String text) {
+            this.text.add(TranslationRequestPayload.newBuilder().withText(text).build());
+            return this;
+        }
+
+        public Builder withText(final Collection<String> text) {
+            this.text = text.stream().map(t -> TranslationRequestPayload.newBuilder().withText(t).build()).collect(Collectors.toList());
             return this;
         }
 
