@@ -10,6 +10,7 @@ import com.gmo.discord.hanyu.bot.api.RetryingTranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
 import com.gmo.discord.hanyu.bot.command.CommandInfo;
 import com.gmo.discord.hanyu.bot.command.ICommand;
+import com.gmo.discord.hanyu.bot.command.LookupCommand;
 import com.gmo.discord.hanyu.bot.command.TranslateCommand;
 import com.gmo.discord.hanyu.bot.message.HanyuMessage;
 import com.gmo.discord.hanyu.bot.microsoft.MicrosoftTranslatorTextApi;
@@ -66,7 +67,7 @@ public class DiscordHanyuBot {
     }
 
     public DiscordHanyuBot(final TranslatorTextApi translatorTextApi, final String prefix) {
-        this.commandList = ImmutableList.of(new TranslateCommand(translatorTextApi));
+        this.commandList = ImmutableList.of(new TranslateCommand(translatorTextApi), new LookupCommand(translatorTextApi));
         this.prefix = prefix;
     }
 
@@ -87,29 +88,32 @@ public class DiscordHanyuBot {
         final IChannel channel = message.getChannel();
         final IGuild guild = message.getGuild();
 
-        final String[] split = message.getContent().split(" ");
-
-        if (split.length >= 1 && split[0].startsWith(prefix)) {
-            String command = split[0].replaceFirst(prefix, "");
-            String[] args = split.length >= 2 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
-
-            final CommandInfo commandInfo = CommandInfo.newBuilder()
-                    .withChannel(channel)
-                    .withGuild(guild)
-                    .withArgs(args)
-                    .withCommand(command)
-                    .withUser(message.getAuthor())
-                    .build();
-            final AtomicInteger messagesAgo = new AtomicInteger();
-            commandList.stream().filter(t-> t.canHandle(commandInfo)).findFirst().ifPresent(cmd -> {
-                final IMessage previousMessage = channel.getMessageHistory().stream()
-                        .peek(t -> messagesAgo.incrementAndGet())
-                        .filter(t -> t.getAuthor().equals(client.getOurUser()))
-                        .findFirst()
-                        .orElse(null);
-                sendMessage(cmd.execute(commandInfo), messagesAgo.get() <= 5 ? previousMessage : null, channel);
-            });
+        final String content;
+        if (message.getContent().startsWith(prefix)) {
+            content = prefix + message.getContent().substring(1).trim().replaceAll("\\s+", " ");
+        } else {
+            return;
         }
+
+        final String[] split = content.split(" ");
+        final String command = split[0].replaceFirst(prefix, "");
+        final String[] args = split.length >= 2 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
+        final CommandInfo commandInfo = CommandInfo.newBuilder()
+                .withChannel(channel)
+                .withGuild(guild)
+                .withArgs(args)
+                .withCommand(command)
+                .withUser(message.getAuthor())
+                .build();
+        final AtomicInteger messagesAgo = new AtomicInteger();
+        commandList.stream().filter(t -> t.canHandle(commandInfo)).findFirst().ifPresent(cmd -> {
+            final IMessage previousMessage = channel.getMessageHistory().stream()
+                    .peek(t -> messagesAgo.incrementAndGet())
+                    .filter(t -> t.getAuthor().equals(client.getOurUser()))
+                    .findFirst()
+                    .orElse(null);
+            sendMessage(cmd.execute(commandInfo), messagesAgo.get() <= 5 ? previousMessage : null, channel);
+        });
     }
 
     private void sendMessage(final HanyuMessage resultMessage,
