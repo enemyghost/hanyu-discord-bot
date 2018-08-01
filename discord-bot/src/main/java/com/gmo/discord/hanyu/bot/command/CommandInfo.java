@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 /**
@@ -15,13 +16,15 @@ public final class CommandInfo {
     private final IUser user;
     private final IChannel channel;
     private final IGuild guild;
+    private final IMessage message;
     private final String command;
     private final String[] args;
 
-    private CommandInfo(Builder builder) {
+    private CommandInfo(final Builder builder) {
         user = builder.user;
         channel = builder.channel;
         guild = builder.guild;
+        message = builder.message;
         command = builder.command;
         args = builder.args;
     }
@@ -40,6 +43,10 @@ public final class CommandInfo {
 
     public IGuild getGuild() {
         return guild;
+    }
+
+    public IMessage getMessage() {
+        return message;
     }
 
     public String getCommand() {
@@ -81,6 +88,7 @@ public final class CommandInfo {
         private IUser user;
         private IChannel channel;
         private IGuild guild;
+        private IMessage message;
         private String command;
         private String[] args;
 
@@ -99,6 +107,11 @@ public final class CommandInfo {
 
         public Builder withGuild(final IGuild guild) {
             this.guild = guild;
+            return this;
+        }
+
+        public Builder withMessage(final IMessage message) {
+            this.message = message;
             return this;
         }
 

@@ -34,6 +34,7 @@ public class LookupCommand implements ICommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(TranslateCommand.class);
     private static final Set<String> ALIASES = ImmutableSet.of("lookup", "l");
     private static final Set<String> PEENLESS_ALIASES = ImmutableSet.of("peenless", "pl", "no-pinyin", "np");
+    private static final Set<String> HELP_ALIASES = ImmutableSet.of("help", "h");
 
     private static final int MAX_LENGTH = 200;
 
@@ -54,16 +55,15 @@ public class LookupCommand implements ICommand {
             throw new IllegalArgumentException("Invalid command, must call canHandle first");
         }
 
-        if (commandInfo.getArgs().length < 1) {
+        String textToTranslate = Joiner.on(" ").join(commandInfo.getArgs());
+
+        final boolean peenless = Arrays.stream(commandInfo.getArgs()).anyMatch(PEENLESS_ALIASES::contains);
+        textToTranslate = textToTranslate.replaceAll(String.join(" |", PEENLESS_ALIASES), "");
+
+        if (HELP_ALIASES.stream().anyMatch(textToTranslate::startsWith)) {
             return help();
         }
 
-        final boolean peenless = PEENLESS_ALIASES.contains(commandInfo.getArg(0).orElse("").trim().toLowerCase());
-        final String[] textArgs = peenless
-                ? Arrays.copyOfRange(commandInfo.getArgs(), 1, commandInfo.getArgs().length)
-                : commandInfo.getArgs();
-
-        final String textToTranslate = Joiner.on(" ").join(textArgs);
         if (textToTranslate.length() > MAX_LENGTH) {
             return HanyuMessage.newBuilder()
                     .withText(String.format("Message of length %d exceeds max length %d", textToTranslate.length(), MAX_LENGTH))
