@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gmo.discord.hanyu.bot.api.RetryingTranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
@@ -34,6 +36,7 @@ import sx.blah.discord.util.RateLimitException;
  * @author tedelen
  */
 public class DiscordHanyuBot {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordHanyuBot.class);
     private static final String DEFAULT_PREFIX = "!";
     private static IDiscordClient client;
 
@@ -80,40 +83,43 @@ public class DiscordHanyuBot {
     public void onMessage(final MessageReceivedEvent event) throws RateLimitException, DiscordException, MissingPermissionsException {
         final IMessage message = event.getMessage();
         final IUser user = message.getAuthor();
-
+        final IChannel channel = message.getChannel();
+        final IGuild guild = message.getGuild();
         if (user.isBot()) {
             return;
         }
 
-        final IChannel channel = message.getChannel();
-        final IGuild guild = message.getGuild();
+        try {
+            final String content;
+            if (message.getContent().startsWith(prefix)) {
+                content = prefix + message.getContent().substring(1).trim().replaceAll("\\s+", " ");
+            } else {
+                return;
+            }
 
-        final String content;
-        if (message.getContent().startsWith(prefix)) {
-            content = prefix + message.getContent().substring(1).trim().replaceAll("\\s+", " ");
-        } else {
-            return;
+            final String[] split = content.split(" ");
+            final String command = split[0].replaceFirst(prefix, "");
+            final String[] args = split.length >= 2 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
+            final CommandInfo commandInfo = CommandInfo.newBuilder()
+                    .withChannel(channel)
+                    .withGuild(guild)
+                    .withMessage(message)
+                    .withArgs(args)
+                    .withCommand(command)
+                    .withUser(message.getAuthor())
+                    .build();
+            final AtomicInteger messagesAgo = new AtomicInteger();
+            commandList.stream().filter(t -> t.canHandle(commandInfo)).findFirst().ifPresent(cmd -> {
+                final IMessage previousMessage = channel.getMessageHistory().stream()
+                        .peek(t -> messagesAgo.incrementAndGet())
+                        .filter(t -> t.getAuthor().equals(client.getOurUser()))
+                        .findFirst()
+                        .orElse(null);
+                sendMessage(cmd.execute(commandInfo), messagesAgo.get() <= 5 ? previousMessage : null, channel);
+            });
+        } catch (final Exception e) {
+            LOGGER.error("Exception processing message: " + message.getContent(), e);
         }
-
-        final String[] split = content.split(" ");
-        final String command = split[0].replaceFirst(prefix, "");
-        final String[] args = split.length >= 2 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
-        final CommandInfo commandInfo = CommandInfo.newBuilder()
-                .withChannel(channel)
-                .withGuild(guild)
-                .withArgs(args)
-                .withCommand(command)
-                .withUser(message.getAuthor())
-                .build();
-        final AtomicInteger messagesAgo = new AtomicInteger();
-        commandList.stream().filter(t -> t.canHandle(commandInfo)).findFirst().ifPresent(cmd -> {
-            final IMessage previousMessage = channel.getMessageHistory().stream()
-                    .peek(t -> messagesAgo.incrementAndGet())
-                    .filter(t -> t.getAuthor().equals(client.getOurUser()))
-                    .findFirst()
-                    .orElse(null);
-            sendMessage(cmd.execute(commandInfo), messagesAgo.get() <= 5 ? previousMessage : null, channel);
-        });
     }
 
     private void sendMessage(final HanyuMessage resultMessage,
