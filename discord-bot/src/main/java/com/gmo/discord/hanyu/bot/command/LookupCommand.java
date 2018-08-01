@@ -77,7 +77,9 @@ public class LookupCommand implements ICommand {
         try {
             final DetectionResponse detectionResponse = translateApi.detect(requestBuilder.build());
             response = translateApi.lookup(requestBuilder
-                    .withSourceLanguage(detectionResponse.getLanguage())
+                    .withSourceLanguage(detectionResponse.getLanguage().equalsIgnoreCase("zh-Hans")
+                            ? "zh-Hans"
+                            : "en")
                     .addDestinationLanguage(detectionResponse.getLanguage().equalsIgnoreCase("zh-Hans")
                             ? "en"
                             : "zh-Hans")
