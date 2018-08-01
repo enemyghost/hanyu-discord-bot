@@ -103,8 +103,8 @@ public class RetryingTranslatorTextApi implements TranslatorTextApi {
         private BlockStrategy blockStrategy;
 
         private Builder() {
-            stopStrategy = StopStrategies.stopAfterAttempt(5);
-            waitStrategy = WaitStrategies.exponentialWait(2000, TimeUnit.MILLISECONDS);
+            stopStrategy = StopStrategies.stopAfterAttempt(2);
+            waitStrategy = WaitStrategies.fixedWait(1000, TimeUnit.MILLISECONDS);
             blockStrategy = BlockStrategies.threadSleepStrategy();
         }
 

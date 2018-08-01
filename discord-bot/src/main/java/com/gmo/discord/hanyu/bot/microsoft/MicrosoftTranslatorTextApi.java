@@ -15,6 +15,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +36,8 @@ import com.google.common.io.CharStreams;
  * @author tedelen
  */
 public class MicrosoftTranslatorTextApi implements TranslatorTextApi {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MicrosoftTranslatorTextApi.class);
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectReader TRANSLATION_RESPONSE_READER = OBJECT_MAPPER.readerFor(new TypeReference<List<TranslationResponse>>() {});
     private static final ObjectReader DETECTION_RESPONSE_READER = OBJECT_MAPPER.readerFor(new TypeReference<List<DetectionResponse>>() {});
@@ -46,7 +50,7 @@ public class MicrosoftTranslatorTextApi implements TranslatorTextApi {
     private static final String API_DETECT_PATH = "/detect?api-version=3.0";
     private static final String API_TO_PARAM = "to";
     private static final String API_FROM_PARAM = "from";
-    public static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
     private final HttpClient httpClient;
     private final String apiHost;
@@ -84,6 +88,7 @@ public class MicrosoftTranslatorTextApi implements TranslatorTextApi {
                 return TRANSLATION_RESPONSE_READER.readValue(responseJson);
             }
         } else {
+            LOGGER.error("Failed status code {}: {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             throw new IOException(String.format("Failed status code %d: %s", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
         }
     }
@@ -107,6 +112,7 @@ public class MicrosoftTranslatorTextApi implements TranslatorTextApi {
                 return Iterables.getOnlyElement(DETECTION_RESPONSE_READER.readValue(responseJson));
             }
         } else {
+            LOGGER.error("Failed status code {}: {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             throw new IOException(String.format("Failed status code %d: %s", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
         }
     }
@@ -132,6 +138,7 @@ public class MicrosoftTranslatorTextApi implements TranslatorTextApi {
                 return Iterables.getOnlyElement(DICTIONARY_LOOKUP_RESPONSE_READER.readValue(responseJson));
             }
         } else {
+            LOGGER.error("Failed status code {}: {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             throw new IOException(String.format("Failed status code %d: %s", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
         }
     }
@@ -158,6 +165,7 @@ public class MicrosoftTranslatorTextApi implements TranslatorTextApi {
                 return Iterables.getOnlyElement(DICTIONARY_EXAMPLE_RESPONSE_READER.readValue(responseJson));
             }
         } else {
+            LOGGER.error("Failed status code {}: {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             throw new IOException(String.format("Failed status code %d: %s", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
         }
     }
