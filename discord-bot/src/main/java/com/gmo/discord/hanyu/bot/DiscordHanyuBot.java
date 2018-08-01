@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.gmo.discord.hanyu.bot.api.RetryingTranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
 import com.gmo.discord.hanyu.bot.command.CommandInfo;
+import com.gmo.discord.hanyu.bot.command.ExampleCommand;
 import com.gmo.discord.hanyu.bot.command.ICommand;
 import com.gmo.discord.hanyu.bot.command.LookupCommand;
 import com.gmo.discord.hanyu.bot.command.TranslateCommand;
@@ -70,7 +71,9 @@ public class DiscordHanyuBot {
     }
 
     public DiscordHanyuBot(final TranslatorTextApi translatorTextApi, final String prefix) {
-        this.commandList = ImmutableList.of(new TranslateCommand(translatorTextApi), new LookupCommand(translatorTextApi));
+        this.commandList = ImmutableList.of(new TranslateCommand(translatorTextApi),
+                new LookupCommand(translatorTextApi),
+                new ExampleCommand(translatorTextApi));
         this.prefix = prefix;
     }
 

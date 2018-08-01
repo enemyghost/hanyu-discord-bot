@@ -113,7 +113,7 @@ public class TranslateCommand implements ICommand {
         }
 
         return HanyuMessage.newBuilder()
-                .withText(String.format("```%s```", Joiner.on("\n").join(translations)))
+                .withText(String.format("```\n%s```", Joiner.on("\n").join(translations)))
                 .build();
     }
 
