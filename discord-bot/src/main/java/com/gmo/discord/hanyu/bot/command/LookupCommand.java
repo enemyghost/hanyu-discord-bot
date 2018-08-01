@@ -98,7 +98,7 @@ public class LookupCommand implements ICommand {
                             .collect(Collectors.toMap(Translation::getText, t -> t.getTransliteration().map(Transliteration::getText).orElse(""))));
                 } else {
                     return HanyuMessage.newBuilder()
-                            .withText(String.format("No dictionary entry found for `%s`", textToTranslate))
+                            .withText(String.format("I couldn\'t find a dictionary entry for `%s`", textToTranslate))
                             .build();
                 }
             }
@@ -123,7 +123,7 @@ public class LookupCommand implements ICommand {
                 .collect(Collectors.toList());
 
         return HanyuMessage.newBuilder()
-                .withText(String.format("```%s```", Joiner.on("\n").join(translations)))
+                .withText(String.format("```\n%s```", Joiner.on("\n").join(translations)))
                 .build();
     }
 

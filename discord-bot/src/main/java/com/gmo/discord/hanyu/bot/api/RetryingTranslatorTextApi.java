@@ -20,6 +20,8 @@ import com.gmo.discord.hanyu.bot.api.entities.DetectionResponse;
 import com.gmo.discord.hanyu.bot.api.entities.DictionaryLookupResponse;
 import com.gmo.discord.hanyu.bot.api.entities.TranslationRequest;
 import com.gmo.discord.hanyu.bot.api.entities.TranslationResponse;
+import com.gmo.discord.hanyu.bot.api.entities.example.ExampleRequest;
+import com.gmo.discord.hanyu.bot.api.entities.example.ExampleResponse;
 import com.google.common.base.Throwables;
 
 /**
@@ -30,12 +32,14 @@ public class RetryingTranslatorTextApi implements TranslatorTextApi {
     private final Retryer<List<TranslationResponse>> translateRetryer;
     private final Retryer<DetectionResponse> detectionRetryer;
     private final Retryer<DictionaryLookupResponse> lookupRetryer;
+    private final Retryer<ExampleResponse> exampleRetryer;
 
     private RetryingTranslatorTextApi(final Builder builder) {
         delegate = builder.delegate;
         translateRetryer = getRetryer(builder);
         detectionRetryer = getRetryer(builder);
         lookupRetryer = getRetryer(builder);
+        exampleRetryer = getRetryer(builder);
     }
 
     public static Builder newBuilder() {
@@ -47,8 +51,8 @@ public class RetryingTranslatorTextApi implements TranslatorTextApi {
         try {
             return translateRetryer.call(() -> delegate.translate(request));
         } catch (final ExecutionException | RetryException e) {
-            Throwables.propagateIfInstanceOf(Throwables.getRootCause(e), IOException.class);
-            throw Throwables.propagate(e);
+            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), IOException.class);
+            throw new RuntimeException(e);
         }
     }
 
@@ -57,8 +61,8 @@ public class RetryingTranslatorTextApi implements TranslatorTextApi {
         try {
             return detectionRetryer.call(() -> delegate.detect(request));
         } catch (final ExecutionException | RetryException e) {
-            Throwables.propagateIfInstanceOf(Throwables.getRootCause(e), IOException.class);
-            throw Throwables.propagate(e);
+            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), IOException.class);
+            throw new RuntimeException(e);
         }
     }
 
@@ -67,8 +71,18 @@ public class RetryingTranslatorTextApi implements TranslatorTextApi {
         try {
             return lookupRetryer.call(() -> delegate.lookup(request));
         } catch (final ExecutionException | RetryException e) {
-            Throwables.propagateIfInstanceOf(Throwables.getRootCause(e), IOException.class);
-            throw Throwables.propagate(e);
+            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), IOException.class);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ExampleResponse examples(final ExampleRequest request) throws IOException {
+        try {
+            return exampleRetryer.call(() -> delegate.examples(request));
+        } catch (final ExecutionException | RetryException e) {
+            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), IOException.class);
+            throw new RuntimeException(e);
         }
     }
 
@@ -77,6 +91,7 @@ public class RetryingTranslatorTextApi implements TranslatorTextApi {
                 .withStopStrategy(builder.stopStrategy)
                 .withWaitStrategy(builder.waitStrategy)
                 .withBlockStrategy(builder.blockStrategy)
+                .retryIfExceptionOfType(IOException.class)
                 .build();
     }
 
