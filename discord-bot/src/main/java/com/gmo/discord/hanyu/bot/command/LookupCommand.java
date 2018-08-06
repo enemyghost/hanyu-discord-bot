@@ -60,7 +60,7 @@ public class LookupCommand implements ICommand {
         final boolean peenless = Arrays.stream(commandInfo.getArgs()).anyMatch(PEENLESS_ALIASES::contains);
         textToTranslate = textToTranslate.replaceAll(String.join(" |", PEENLESS_ALIASES), "");
 
-        if (HELP_ALIASES.stream().anyMatch(textToTranslate::startsWith)) {
+        if (HELP_ALIASES.stream().anyMatch(textToTranslate::equalsIgnoreCase)) {
             return help();
         }
 
