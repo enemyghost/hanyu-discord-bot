@@ -69,7 +69,7 @@ public class TranslateCommand implements ICommand {
                     .filter(m -> !m.getAuthor().isBot()
                                     && m != commandInfo.getMessage()
                                     && !m.getContent().startsWith(commandInfo.getMessage().getContent().trim().substring(0, 1)))
-                    .max(Comparator.comparingLong(t -> t.getCreationDate().toEpochSecond(ZoneOffset.UTC)))
+                    .max(Comparator.comparingLong(t -> t.getTimestamp().toEpochSecond(ZoneOffset.UTC)))
                     .map(IMessage::getContent)
                     .orElse(textToTranslate.trim());
 
