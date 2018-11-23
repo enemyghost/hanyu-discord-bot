@@ -10,14 +10,15 @@ import org.slf4j.LoggerFactory;
 
 import com.gmo.discord.hanyu.bot.api.RetryingTranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
-import com.gmo.discord.hanyu.bot.command.CommandInfo;
+import com.gmo.discord.support.command.CommandInfo;
 import com.gmo.discord.hanyu.bot.command.ExampleCommand;
-import com.gmo.discord.hanyu.bot.command.ICommand;
+import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.hanyu.bot.command.LookupCommand;
 import com.gmo.discord.hanyu.bot.command.TranslateCommand;
-import com.gmo.discord.hanyu.bot.message.HanyuMessage;
+import com.gmo.discord.support.message.DiscordMessage;
 import com.gmo.discord.hanyu.bot.microsoft.MicrosoftTranslatorTextApi;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -118,14 +119,14 @@ public class DiscordHanyuBot {
                         .filter(t -> t.getAuthor().equals(client.getOurUser()))
                         .findFirst()
                         .orElse(null);
-                sendMessage(cmd.execute(commandInfo), messagesAgo.get() <= 5 ? previousMessage : null, channel);
+                sendMessage(Iterables.getOnlyElement(cmd.execute(commandInfo)), messagesAgo.get() <= 5 ? previousMessage : null, channel);
             });
         } catch (final Exception e) {
             LOGGER.error("Exception processing message: " + message.getContent(), e);
         }
     }
 
-    private void sendMessage(final HanyuMessage resultMessage,
+    private void sendMessage(final DiscordMessage resultMessage,
                              final IMessage previousMessage,
                              final IChannel channel) {
         resultMessage.getEmbedObject().ifPresent(embedObject -> {

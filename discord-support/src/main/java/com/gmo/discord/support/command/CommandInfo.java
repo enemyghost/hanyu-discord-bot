@@ -1,4 +1,4 @@
-package com.gmo.discord.hanyu.bot.command;
+package com.gmo.discord.support.command;
 
 import java.util.Optional;
 
