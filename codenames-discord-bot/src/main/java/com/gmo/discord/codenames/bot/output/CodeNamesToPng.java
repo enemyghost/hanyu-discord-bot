@@ -30,6 +30,7 @@ public class CodeNamesToPng {
     private static final int WIDTH = (CARD_WIDTH + SPACING) * 5 + SPACING;
     private static final int ARC_SIZE = 30;
     private static final int FONT_SIZE = 20;
+    private static final int CHARACTER_WIDTH = 13;
 
     public byte[] getPngBytes(final Card[][] map, final boolean showAll) {
         try {
@@ -57,7 +58,7 @@ public class CodeNamesToPng {
 
         @Override
         public void paintComponent(final Graphics ig2) {
-            final Font font = new Font("DialogInput", Font.BOLD, FONT_SIZE);
+            final Font font = new Font("Monospaced", Font.BOLD, FONT_SIZE);
             ig2.setFont(font);
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
@@ -68,7 +69,9 @@ public class CodeNamesToPng {
                     final int topLeftY = i * (CARD_HEIGHT + SPACING) + SPACING;
                     ig2.fillRoundRect(topLeftX, topLeftY, CARD_WIDTH, CARD_HEIGHT, ARC_SIZE, ARC_SIZE);
                     ig2.setColor(color == Color.BLACK ? Color.WHITE : Color.BLACK);
-                    ig2.drawString(c.getWord(), topLeftX + SPACING, topLeftY + ((CARD_HEIGHT + SPACING) / 2));
+                    final int centerX = topLeftX + (CARD_WIDTH / 2);
+                    final int offset = (int)(((long)c.getWord().length() / 2) * CHARACTER_WIDTH);
+                    ig2.drawString(c.getWord(), centerX - offset, topLeftY + ((CARD_HEIGHT + SPACING) / 2));
                 }
             }
         }

@@ -55,7 +55,7 @@ public class PassCommand implements ICommand {
                             .build(),
                     DiscordMessage.newBuilder()
                             .appendText(passer.getDisplayName() + " passed; better luck next time. It's " + codeNames.getActiveTeam().getType() + "'s turn. ")
-                            .appendText(codeNames.getActiveTeam().getClueGiver().getDisplayName() + ", give a clue when you're ready with `!clue <word> <count>`.")
+                            .appendText(codeNames.getActiveTeam().getClueGiver().getUser().mention(true) + ", give a clue when you're ready with `!clue <word> <count>`.")
             .build());
         } catch (final GamePlayException e) {
             return DiscordMessage.newBuilder()

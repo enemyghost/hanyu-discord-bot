@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
  * @author tedelen
  */
 public class AbandonCommand implements ICommand {
-    private static final List<String> TRIGGER = ImmutableList.of("!!abandon, !abandon");
+    private static final List<String> TRIGGER = ImmutableList.of("!!abandon", "!abandon");
 
     private final CodeNamesStore store;
 

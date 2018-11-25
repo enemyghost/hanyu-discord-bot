@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.gmo.discord.codenames.bot.command.AbandonCommand;
 import com.gmo.discord.codenames.bot.command.ClueCommand;
 import com.gmo.discord.codenames.bot.command.CurrentStateCommand;
-import com.gmo.discord.codenames.bot.command.DMCommand;
 import com.gmo.discord.codenames.bot.command.GuessCommand;
 import com.gmo.discord.codenames.bot.command.JoinGameCommand;
 import com.gmo.discord.codenames.bot.command.LeaveGameCommand;
@@ -72,8 +71,7 @@ public class DiscordCodeNamesBot {
                 new NewGameCommand(gameStore),
                 new NextGameCommand(gameStore),
                 new PassCommand(gameStore),
-                new StartGameCommand(gameStore),
-                new DMCommand());
+                new StartGameCommand(gameStore));
     }
 
     @EventSubscriber

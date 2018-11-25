@@ -55,7 +55,7 @@ public class JoinGameCommand implements ICommand {
 
         final String startGame =
                 (gameBuilder.get().getRedTeam().isValid() && gameBuilder.get().getBlueTeam().isValid())
-                        ? "\nUse `!start` to start the game. "
+                        ? "\nUse `!deal` to start the game. "
                         : "";
 
         return DiscordMessage.newBuilder()
