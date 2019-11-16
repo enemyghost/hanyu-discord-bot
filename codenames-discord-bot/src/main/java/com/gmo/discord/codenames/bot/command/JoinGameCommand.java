@@ -61,7 +61,7 @@ public class JoinGameCommand implements ICommand {
         return DiscordMessage.newBuilder()
                 .appendText(message)
                 .appendText(startGame)
-                .appendText("\nUse `!join[ red|blue]` to join.")
+                .appendText("\nUse `!join [red|blue]` to join.")
                 .appendText("\nRed Team: ")
                 .appendText(gameBuilder.get().getRedTeam().getPlayers().stream().map(Player::getDisplayName).collect(Collectors.joining(", ")))
                 .appendText("\nBlue Team: ")
@@ -73,7 +73,7 @@ public class JoinGameCommand implements ICommand {
     @Override
     public DiscordMessage help() {
         return DiscordMessage.newBuilder()
-                .withText("Use `!join[ red|blue]` to join the red or blue team for the next game. " +
+                .withText("Use `!join [red|blue]` to join the red or blue team for the next game. " +
                         "Omit the team name to join the team who needs players.")
                 .build();
     }

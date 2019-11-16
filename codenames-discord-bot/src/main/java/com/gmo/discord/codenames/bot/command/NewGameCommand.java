@@ -33,7 +33,7 @@ public class NewGameCommand implements ICommand {
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
         if (store.getGameLobby(commandInfo.getChannel()).isPresent()) {
             return DiscordMessage.newBuilder()
-                    .withText("To join the next game, use `!join <red|blue>`")
+                    .withText("To join the next game, use `!join [red|blue]`")
                     .build().singleton();
         }
         final Optional<CodeNames> game = store.getGame(commandInfo.getChannel());
@@ -51,7 +51,7 @@ public class NewGameCommand implements ICommand {
         return DiscordMessage.newBuilder()
                 .appendText("Let's play chode names! ")
                 .appendText(commandInfo.getUserName() + " has started a game and joined the `red` team. ")
-                .appendText("Use `!join[ red|blue]` to join a team.")
+                .appendText("Use `!join [red|blue]` to join a team.")
                 .build().singleton();
     }
 
