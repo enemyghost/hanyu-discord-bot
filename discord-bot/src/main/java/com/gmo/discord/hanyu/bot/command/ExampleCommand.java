@@ -2,6 +2,7 @@ package com.gmo.discord.hanyu.bot.command;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,13 @@ import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.entities.DetectionResponse;
 import com.gmo.discord.hanyu.bot.api.entities.Translation;
 import com.gmo.discord.hanyu.bot.api.entities.TranslationRequest;
-import com.gmo.discord.hanyu.bot.api.entities.TranslationResponse;
 import com.gmo.discord.hanyu.bot.api.entities.Transliteration;
 import com.gmo.discord.hanyu.bot.api.entities.example.Example;
 import com.gmo.discord.hanyu.bot.api.entities.example.ExampleRequest;
 import com.gmo.discord.hanyu.bot.api.entities.example.ExampleResponse;
-import com.gmo.discord.hanyu.bot.message.HanyuMessage;
+import com.gmo.discord.support.command.CommandInfo;
+import com.gmo.discord.support.command.ICommand;
+import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -53,7 +55,7 @@ public class ExampleCommand implements ICommand {
     }
 
     @Override
-    public HanyuMessage execute(final CommandInfo commandInfo) {
+    public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
         if (!canHandle(commandInfo)) {
             throw new IllegalArgumentException("Invalid command, must call canHandle first");
         }
@@ -63,18 +65,18 @@ public class ExampleCommand implements ICommand {
         textToTranslate = textToTranslate.replaceAll(String.join(" |", PEENLESS_ALIASES), "");
 
         if (HELP_ALIASES.stream().anyMatch(textToTranslate::startsWith)) {
-            return help();
+            return help().singleton();
         }
 
         if (textToTranslate.length() > MAX_LENGTH) {
-            return HanyuMessage.newBuilder()
+            return DiscordMessage.newBuilder()
                     .withText(String.format("Message of length %d exceeds max length %d", textToTranslate.length(), MAX_LENGTH))
-                    .build();
+                    .build().singleton();
         }
 
         final List<String> parts = SPLITTER.splitToList(textToTranslate).stream().map(String::trim).collect(Collectors.toList());
         if (parts.size() == 0 || parts.size() > 2) {
-            return help();
+            return help().singleton();
         }
 
         final String textOrTranslation = parts.get(0);
@@ -107,9 +109,9 @@ public class ExampleCommand implements ICommand {
             }
 
             if (Strings.isNullOrEmpty(chinese) || Strings.isNullOrEmpty(english)) {
-                return HanyuMessage.newBuilder()
+                return DiscordMessage.newBuilder()
                         .withText(String.format("Could not find translation for `%s`", parts.get(0)))
-                        .build();
+                        .build().singleton();
             }
 
             final ExampleRequest exampleRequest = ExampleRequest.newBuilder()
@@ -120,9 +122,9 @@ public class ExampleCommand implements ICommand {
                     .build();
             final ExampleResponse examples = translateApi.examples(exampleRequest);
             if (examples.getExamples().size() == 0) {
-                return HanyuMessage.newBuilder()
+                return DiscordMessage.newBuilder()
                         .withText(String.format("I couldn\'t find any examples for `%s`, `%s`", chinese, english))
-                        .build();
+                        .build().singleton();
             }
 
             final Map<String, Example> chineseToExamples = examples.getExamples().stream()
@@ -151,20 +153,20 @@ public class ExampleCommand implements ICommand {
                             e.getValue().getSourceSentence()))
                     .collect(Collectors.toList());
 
-            return HanyuMessage.newBuilder()
+            return DiscordMessage.newBuilder()
                     .withText(String.format("```\n%s```", Joiner.on("\n").join(translations)))
-                    .build();
+                    .build().singleton();
         } catch (final IOException e) {
             LOGGER.error("Exception reaching ms translator api", e);
-            return HanyuMessage.newBuilder()
+            return DiscordMessage.newBuilder()
                     .withText("Failure to reach MS API")
-                    .build();
+                    .build().singleton();
         }
     }
 
     @Override
-    public HanyuMessage help() {
-        return HanyuMessage.newBuilder()
+    public DiscordMessage help() {
+        return DiscordMessage.newBuilder()
                 .withText("Usage: !examples[ no-pinyin|np] 你好, hello")
                 .build();
     }

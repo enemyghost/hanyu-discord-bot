@@ -11,7 +11,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>codenames-discord-bot</module>
         <module>discord-bot</module>
+        <module>discord-support</module>
     </modules>
 
     <properties>
