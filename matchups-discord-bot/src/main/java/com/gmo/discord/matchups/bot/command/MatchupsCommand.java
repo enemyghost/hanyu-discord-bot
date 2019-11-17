@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.gmo.discord.matchups.bot.util.StringUtils.pad;
+
 public class MatchupsCommand implements Command {
     private static final int PAGE_SIZE = 10;
     private static final List<String> TRIGGER = ImmutableList.of("!matchups");
@@ -90,13 +92,5 @@ public class MatchupsCommand implements Command {
                     .build();
         }
         return responseBuilder.build();
-    }
-
-    private static String pad(final String toPad, final int length) {
-        final StringBuilder sb = new StringBuilder(toPad);
-        for (int i = 0; i < length - toPad.length(); i++) {
-            sb.append(" ");
-        }
-        return sb.toString();
     }
 }

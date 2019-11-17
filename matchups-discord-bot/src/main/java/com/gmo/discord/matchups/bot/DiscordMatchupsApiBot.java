@@ -4,6 +4,7 @@ import com.gmo.discord.matchups.bot.command.Command;
 import com.gmo.discord.matchups.bot.command.CommandInfo;
 import com.gmo.discord.matchups.bot.command.MatchupCommand;
 import com.gmo.discord.matchups.bot.command.MatchupsCommand;
+import com.gmo.discord.matchups.bot.command.ParlayCommand;
 import com.gmo.discord.matchups.bot.command.SportsCommand;
 import com.gmo.matchup.api.client.MatchupApiClient;
 import com.google.common.collect.ImmutableList;
@@ -28,7 +29,8 @@ public class DiscordMatchupsApiBot {
     public DiscordMatchupsApiBot(final MatchupApiClient matchupApiClient) {
         this.commands = ImmutableList.of(new MatchupsCommand(Objects.requireNonNull(matchupApiClient)),
                 new MatchupCommand(matchupApiClient),
-                SportsCommand.INSTANCE);
+                SportsCommand.INSTANCE,
+                new ParlayCommand(matchupApiClient));
     }
 
     public void onReady() {

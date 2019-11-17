@@ -16,6 +16,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.gmo.discord.matchups.bot.util.StringUtils.oddsString;
+import static com.gmo.discord.matchups.bot.util.StringUtils.pad;
+import static com.gmo.discord.matchups.bot.util.StringUtils.padFront;
+import static com.gmo.discord.matchups.bot.util.StringUtils.spreadString;
+
 public class MatchupCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("!matchup", "!nfl", "!ncaaf");
     private static final String USAGE = "`!{sport} {index}`";
@@ -109,42 +114,5 @@ public class MatchupCommand implements Command {
                         oddsString(matchup.getBets().getBets().getTotalOver().getOdds())), awayColumnLength + 2))
                 .appendText("```")
                 .build();
-    }
-
-    private static String pad(final String toPad, final int length) {
-        final StringBuilder sb = new StringBuilder(toPad);
-        for (int i = 0; i < length - toPad.length(); i++) {
-            sb.append(" ");
-        }
-        return sb.toString();
-    }
-
-    private static String padFront(final String toPad, final int length) {
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length - toPad.length(); i++) {
-            sb.append(" ");
-        }
-        sb.append(toPad);
-        return sb.toString();
-    }
-
-    private static String spreadString(final double spread) {
-        if (spread > 0) {
-            return String.format("+%.1f", spread);
-        } else if (spread < 0) {
-            return String.format("%.1f", spread);
-        } else {
-            return "PK";
-        }
-    }
-
-    private static String oddsString(final int odds) {
-        if (odds > 0) {
-            return String.format("+%d", odds);
-        } else if (odds < 0) {
-            return String.valueOf(odds);
-        } else {
-            return "+000";
-        }
     }
 }
