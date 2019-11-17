@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import static com.gmo.discord.matchups.bot.util.StringUtils.oddsString;
 import static com.gmo.discord.matchups.bot.util.StringUtils.pad;
@@ -23,6 +24,7 @@ public class ParlayCommand implements Command {
     private static final int COL_WIDTH = 12;
 
     private final MatchupApiClient matchupApiClient;
+    private final Random random = new Random();
 
     public ParlayCommand(final MatchupApiClient matchupApiClient) {
         this.matchupApiClient = Objects.requireNonNull(matchupApiClient);
@@ -59,7 +61,7 @@ public class ParlayCommand implements Command {
                     final String homeTeam = m.getHomeTeam().getAbbreviation();
                     final String matchup = String.format("%s@%s", awayTeam, homeTeam);
 
-                    final int betChoice = (int)(Math.random() * 6);
+                    final int betChoice = random.nextInt(6);
                     switch (betChoice) {
                         case 0:
                             odds.add(bets.getSpreadAway().getOdds());
