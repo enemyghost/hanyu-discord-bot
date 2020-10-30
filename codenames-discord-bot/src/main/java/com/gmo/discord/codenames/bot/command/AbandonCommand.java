@@ -6,15 +6,15 @@ import java.util.Optional;
 
 import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
 
 /**
  * @author tedelen
  */
-public class AbandonCommand implements ICommand {
+public class AbandonCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("!!abandon", "!abandon");
 
     private final CodeNamesStore store;
@@ -24,21 +24,21 @@ public class AbandonCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return TRIGGER.contains(commandInfo.getCommand().toLowerCase());
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
         if (commandInfo.getCommand().startsWith("!!")) {
-            final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel());
-            if (!gameOpt.isPresent() || gameOpt.get().getGameState().isFinal()) {
+            final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel().orElseThrow());
+            if (gameOpt.isEmpty() || gameOpt.get().getGameState().isFinal()) {
                 return DiscordMessage.newBuilder()
                         .withText("There is no active game to abandon.")
                         .build().singleton();
             }
 
-            store.deleteGameLobby(commandInfo.getChannel());
+            store.deleteGameLobby(commandInfo.getChannel().orElseThrow());
             return DiscordMessage.newBuilder()
                     .withText("Alright, quitter. The game has been deleted. Start a new game with `!chodes`")
                     .build()

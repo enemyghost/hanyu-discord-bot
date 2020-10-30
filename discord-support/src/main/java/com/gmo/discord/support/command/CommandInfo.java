@@ -1,60 +1,57 @@
 package com.gmo.discord.support.command;
 
+import com.google.common.base.MoreObjects;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.channel.Channel;
+
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-
-/**
- * Contains information about a command sent from the client.
- *
- * @author tedelen
- */
-public final class CommandInfo {
-    private final IUser user;
-    private final IChannel channel;
-    private final IGuild guild;
-    private final IMessage message;
+public class CommandInfo {
+    private final Member member;
+    private final String message;
+    private final Guild guild;
+    private final Channel channel;
     private final String command;
     private final String[] args;
 
     private CommandInfo(final Builder builder) {
-        user = builder.user;
-        channel = builder.channel;
-        guild = builder.guild;
+        member = builder.member;
         message = builder.message;
+        guild = builder.guild;
         command = builder.command;
+        channel = builder.channel;
         args = builder.args;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
+    public Optional<Member> getMember() {
+        return Optional.ofNullable(member);
     }
 
-    public IUser getUser() {
-        return user;
-    }
-
-    public IChannel getChannel() {
-        return channel;
-    }
-
-    public IGuild getGuild() {
-        return guild;
-    }
-
-    public IMessage getMessage() {
+    public String getMessage() {
         return message;
+    }
+
+    public Optional<Guild> getGuild() {
+        return Optional.ofNullable(guild);
     }
 
     public String getCommand() {
         return command;
     }
 
+    public Optional<Channel> getChannel() {
+        return Optional.ofNullable(channel);
+    }
+
     public String[] getArgs() {
         return args;
+    }
+
+    public int getArgCount() {
+        return args.length;
     }
 
     public Optional<String> getArg(final int index) {
@@ -72,60 +69,85 @@ public final class CommandInfo {
         }
     }
 
-    public Optional<Long> getLongArg(final int index) {
-        try {
-            return getArg(index).map(Long::parseLong);
-        } catch (final NumberFormatException e) {
-            return Optional.empty();
-        }
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
-    public String getUserName() {
-        return user.getDisplayName(guild);
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final CommandInfo that = (CommandInfo) o;
+        return Objects.equals(member, that.member) &&
+                Objects.equals(message, that.message) &&
+                Objects.equals(guild, that.guild) &&
+                Objects.equals(channel, that.channel) &&
+                Objects.equals(command, that.command) &&
+                Arrays.equals(args, that.args);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(member, message, guild, channel, command);
+        result = 31 * result + Arrays.hashCode(args);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("member", member)
+                .add("message", message)
+                .add("guild", guild)
+                .add("channel", channel)
+                .add("command", command)
+                .add("args", args)
+                .toString();
     }
 
     public static final class Builder {
-        private IUser user;
-        private IChannel channel;
-        private IGuild guild;
-        private IMessage message;
+        private Member member;
+        private String message;
+        private Guild guild;
+        private Channel channel;
         private String command;
         private String[] args;
 
         private Builder() {
         }
 
-        public Builder withUser(final IUser user) {
-            this.user = user;
+        public Builder withMember(final Member val) {
+            member = val;
             return this;
         }
 
-        public Builder withChannel(final IChannel channel) {
-            this.channel = channel;
+        public Builder withMessage(final String val) {
+            message = val;
             return this;
         }
 
-        public Builder withGuild(final IGuild guild) {
-            this.guild = guild;
+        public Builder withGuild(final Guild val) {
+            guild = val;
             return this;
         }
 
-        public Builder withMessage(final IMessage message) {
-            this.message = message;
+        public Builder withCommand(final String val) {
+            command = val;
             return this;
         }
 
-        public Builder withCommand(final String command) {
-            this.command = command;
+        public Builder withArgs(final String[] val) {
+            args = val;
             return this;
         }
 
-        public Builder withArgs(final String[] args) {
-            this.args = args;
+        public Builder withChannel(final Channel val) {
+            channel = val;
             return this;
         }
 
         public CommandInfo build() {
+            Objects.requireNonNull(message);
             return new CommandInfo(this);
         }
     }

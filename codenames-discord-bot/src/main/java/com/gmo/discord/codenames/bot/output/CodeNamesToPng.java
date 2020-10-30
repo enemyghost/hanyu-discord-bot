@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +15,8 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.gmo.discord.codenames.bot.entities.Card;
 import com.gmo.discord.codenames.bot.entities.GameBoard;
@@ -23,14 +26,21 @@ import com.gmo.discord.codenames.bot.store.RandomWordsFromFileMapSupplier;
 public class CodeNamesToPng {
     public static final CodeNamesToPng INSTANCE = new CodeNamesToPng();
 
-    private static final int CARD_HEIGHT = 100;
-    private static final int CARD_WIDTH = 160;
+    private static final int CARD_HEIGHT = 120;
+    private static final int CARD_WIDTH = 180;
     private static final int SPACING = 5;
     private static final int HEIGHT = (CARD_HEIGHT + SPACING) * 5 + SPACING;
     private static final int WIDTH = (CARD_WIDTH + SPACING) * 5 + SPACING;
     private static final int ARC_SIZE = 30;
-    private static final int FONT_SIZE = 20;
-    private static final int CHARACTER_WIDTH = 13;
+    private static final int FONT_SIZE = 22;
+    private static final int CHARACTER_WIDTH = 18;
+    private static final Font FONT;
+
+    static {
+        final Font fontBig = new Font(Font.MONOSPACED, Font.PLAIN, FONT_SIZE);
+        FONT = fontBig.deriveFont(Map.of(TextAttribute.TRACKING, 0.15,
+                TextAttribute.WIDTH, TextAttribute.WIDTH_SEMI_EXTENDED));
+    }
 
     public byte[] getPngBytes(final Card[][] map, final boolean showAll) {
         try {
@@ -58,8 +68,7 @@ public class CodeNamesToPng {
 
         @Override
         public void paintComponent(final Graphics ig2) {
-            final Font font = new Font("Monospaced", Font.BOLD, FONT_SIZE);
-            ig2.setFont(font);
+            ig2.setFont(FONT);
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     final Card c = map[i][j];
@@ -69,9 +78,9 @@ public class CodeNamesToPng {
                     final int topLeftY = i * (CARD_HEIGHT + SPACING) + SPACING;
                     ig2.fillRoundRect(topLeftX, topLeftY, CARD_WIDTH, CARD_HEIGHT, ARC_SIZE, ARC_SIZE);
                     ig2.setColor(color == Color.BLACK ? Color.WHITE : Color.BLACK);
-                    final int centerX = topLeftX + (CARD_WIDTH / 2);
-                    final int offset = (int)(((long)c.getWord().length() / 2) * CHARACTER_WIDTH);
-                    ig2.drawString(c.getWord(), centerX - offset, topLeftY + ((CARD_HEIGHT + SPACING) / 2));
+                    final int centerX = topLeftX + (CARD_WIDTH / 2) + SPACING;
+                    final int offset = (int)(((double)c.getWord().length() / 2) * CHARACTER_WIDTH);
+                    ig2.drawString(c.getWord(), centerX - offset, topLeftY + (CARD_HEIGHT / 2) + SPACING);
                 }
             }
         }

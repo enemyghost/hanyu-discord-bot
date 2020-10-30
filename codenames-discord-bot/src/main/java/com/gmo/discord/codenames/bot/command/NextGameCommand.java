@@ -8,15 +8,15 @@ import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.game.CodeNamesBuilder;
 import com.gmo.discord.codenames.bot.output.CodeNamesToPng;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
 
 /**
  * @author tedelen
  */
-public class NextGameCommand implements ICommand {
+public class NextGameCommand implements Command {
     private static final String TRIGGER = "!rechode";
 
     private final CodeNamesStore store;
@@ -26,14 +26,14 @@ public class NextGameCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return commandInfo.getCommand().equalsIgnoreCase(TRIGGER);
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
-        final Optional<CodeNames> game = store.getGame(commandInfo.getChannel());
-        if (!game.isPresent()) {
+        final Optional<CodeNames> game = store.getGame(commandInfo.getChannel().orElseThrow());
+        if (game.isEmpty()) {
             return DiscordMessage.newBuilder()
                     .withText("No current game, you cannot rechode. Use `!chodes` to start a new game.")
                     .build().singleton();
@@ -45,7 +45,7 @@ public class NextGameCommand implements ICommand {
 
         final CodeNames codeNames = new CodeNamesBuilder(game.get()).build();
         final Team nextTeam = codeNames.getActiveTeam();
-        store.storeGame(commandInfo.getChannel(), codeNames);
+        store.storeGame(commandInfo.getChannel().orElseThrow(), codeNames);
         return ImmutableList.of(
                 DiscordMessage.newBuilder()
                         .appendText("Starting a new game with the same teams. ")

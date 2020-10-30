@@ -2,7 +2,6 @@ package com.gmo.discord.hanyu.bot.command;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import com.gmo.discord.hanyu.bot.api.entities.example.Example;
 import com.gmo.discord.hanyu.bot.api.entities.example.ExampleRequest;
 import com.gmo.discord.hanyu.bot.api.entities.example.ExampleResponse;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

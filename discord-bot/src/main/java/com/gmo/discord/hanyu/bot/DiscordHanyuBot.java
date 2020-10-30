@@ -12,7 +12,6 @@ import com.gmo.discord.hanyu.bot.api.RetryingTranslatorTextApi;
 import com.gmo.discord.hanyu.bot.api.TranslatorTextApi;
 import com.gmo.discord.support.command.CommandInfo;
 import com.gmo.discord.hanyu.bot.command.ExampleCommand;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.hanyu.bot.command.LookupCommand;
 import com.gmo.discord.hanyu.bot.command.TranslateCommand;
 import com.gmo.discord.support.message.DiscordMessage;

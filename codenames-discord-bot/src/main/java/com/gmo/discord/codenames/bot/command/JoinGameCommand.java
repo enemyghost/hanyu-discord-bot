@@ -1,21 +1,21 @@
 package com.gmo.discord.codenames.bot.command;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.gmo.discord.codenames.bot.entities.Player;
 import com.gmo.discord.codenames.bot.entities.TeamType;
 import com.gmo.discord.codenames.bot.game.CodeNamesBuilder;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author tedelen
  */
-public class JoinGameCommand implements ICommand {
+public class JoinGameCommand implements Command {
     private static final String TRIGGER = "!join";
 
     private final CodeNamesStore store;
@@ -25,19 +25,20 @@ public class JoinGameCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return commandInfo.getCommand().equalsIgnoreCase(TRIGGER);
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
-        final Optional<CodeNamesBuilder> gameBuilder = store.getGameLobby(commandInfo.getChannel());
-        if (!gameBuilder.isPresent()) {
+        final Optional<CodeNamesBuilder> gameBuilder = store.getGameLobby(commandInfo.getChannel().orElseThrow());
+        if (gameBuilder.isEmpty()) {
             return DiscordMessage.newBuilder()
                     .withText("No available games to join. Use `!chodes` to start a new game.")
                     .build().singleton();
         }
-        final Player p = new Player(commandInfo.getUser(), commandInfo.getUserName());
+
+        final Player p = new Player(commandInfo.getMember().orElseThrow());
 
         final String message;
         if (gameBuilder.get().getPlayers().contains(p)) {
@@ -50,7 +51,7 @@ public class JoinGameCommand implements ICommand {
             } else {
                 gameBuilder.get().addPlayer(p);
             }
-            message = commandInfo.getUserName() + " joined the game. ";
+            message = p.getDisplayName() + " joined the game. ";
         }
 
         final String startGame =
@@ -61,7 +62,7 @@ public class JoinGameCommand implements ICommand {
         return DiscordMessage.newBuilder()
                 .appendText(message)
                 .appendText(startGame)
-                .appendText("\nUse `!join [red|blue]` to join.")
+                .appendText("\nUse `!join <red|blue>` to join.")
                 .appendText("\nRed Team: ")
                 .appendText(gameBuilder.get().getRedTeam().getPlayers().stream().map(Player::getDisplayName).collect(Collectors.joining(", ")))
                 .appendText("\nBlue Team: ")
@@ -73,7 +74,7 @@ public class JoinGameCommand implements ICommand {
     @Override
     public DiscordMessage help() {
         return DiscordMessage.newBuilder()
-                .withText("Use `!join [red|blue]` to join the red or blue team for the next game. " +
+                .withText("Use `!join <red|blue>` to join the red or blue team for the next game. " +
                         "Omit the team name to join the team who needs players.")
                 .build();
     }

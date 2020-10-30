@@ -45,7 +45,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.gmo.discord.codenames.bot.DiscordCodeNamesBot</mainClass>
+                                    <mainClass>com.gmo.discord.codenames.bot.Application</mainClass>
                                 </transformer>
                             </transformers>
                             <filters>

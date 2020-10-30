@@ -1,24 +1,24 @@
 package com.gmo.discord.codenames.bot.command;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import com.gmo.discord.codenames.bot.entities.Player;
 import com.gmo.discord.codenames.bot.exception.GamePlayException;
 import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.output.CodeNamesToPng;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author tedelen
  */
-public class PassCommand implements ICommand {
+public class PassCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("!pass");
 
     private final CodeNamesStore store;
@@ -28,13 +28,13 @@ public class PassCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return TRIGGER.contains(commandInfo.getCommand().toLowerCase());
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
-        final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel());
+        final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel().orElseThrow());
         if (!gameOpt.isPresent() || gameOpt.get().getGameState().isFinal()) {
             if (commandInfo.getCommand().startsWith("!")) {
                 return DiscordMessage.newBuilder()
@@ -47,15 +47,15 @@ public class PassCommand implements ICommand {
 
         final CodeNames codeNames = gameOpt.get();
         try {
-            final Player passer = new Player(commandInfo.getUser(), commandInfo.getUserName());
+            final Player passer = new Player(commandInfo.getMember().orElseThrow());
             codeNames.pass(passer);
-            store.storeGame(commandInfo.getChannel(), codeNames);
+            store.storeGame(commandInfo.getChannel().orElseThrow(), codeNames);
             return ImmutableList.of(DiscordMessage.newBuilder()
                             .withContent(CodeNamesToPng.INSTANCE.getPngBytes(codeNames.map(), false))
                             .build(),
                     DiscordMessage.newBuilder()
                             .appendText(passer.getDisplayName() + " passed; better luck next time. It's " + codeNames.getActiveTeam().getType() + "'s turn. ")
-                            .appendText(codeNames.getActiveTeam().getClueGiver().getUser().mention(true) + ", give a clue when you're ready with `!clue <word> <count>`.")
+                            .appendText(codeNames.getActiveTeam().getClueGiver().getUser().getNicknameMention() + ", give a clue when you're ready with `!clue <word> <count>`.")
             .build());
         } catch (final GamePlayException e) {
             return DiscordMessage.newBuilder()

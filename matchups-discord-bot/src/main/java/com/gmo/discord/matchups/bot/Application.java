@@ -15,6 +15,7 @@ public class Application {
 
         final DiscordMatchupsApiBot apiBot = new DiscordMatchupsApiBot(MatchupApiFeignClientFactory.createDefault(System.getenv("MATCHUPS_BASE_URL")));
         final DiscordClient client = new DiscordClientBuilder(token).build();
+
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> System.out.println("Bot is ready. Gateway Version:" +  event.getGatewayVersion()));
         client.getEventDispatcher().on(MessageCreateEvent.class)

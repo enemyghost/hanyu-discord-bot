@@ -1,22 +1,22 @@
 package com.gmo.discord.codenames.bot.command;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.gmo.discord.codenames.bot.entities.Player;
 import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.output.CodeNamesToPng;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author tedelen
  */
-public class CurrentStateCommand implements ICommand {
+public class CurrentStateCommand implements Command {
     private static final String TRIGGER = "!board";
 
     private final CodeNamesStore store;
@@ -26,14 +26,14 @@ public class CurrentStateCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return commandInfo.getCommand().equalsIgnoreCase(TRIGGER);
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
-        final Optional<CodeNames> game = store.getGame(commandInfo.getChannel());
-        if (!game.isPresent()) {
+        final Optional<CodeNames> game = store.getGame(commandInfo.getChannel().orElseThrow());
+        if (game.isEmpty()) {
             return DiscordMessage.newBuilder()
                     .withText("No current game. Use `!chodes` to start a new game.")
                     .build().singleton();

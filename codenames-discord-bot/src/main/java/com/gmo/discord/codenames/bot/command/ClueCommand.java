@@ -11,15 +11,15 @@ import com.gmo.discord.codenames.bot.entities.Player;
 import com.gmo.discord.codenames.bot.exception.GamePlayException;
 import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
 
 /**
  * @author tedelen
  */
-public class ClueCommand implements ICommand {
+public class ClueCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("clue", "!clue");
 
     private final CodeNamesStore store;
@@ -29,14 +29,14 @@ public class ClueCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return TRIGGER.contains(commandInfo.getCommand().toLowerCase());
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
-        final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel());
-        if (!gameOpt.isPresent() || gameOpt.get().getGameState().isFinal()) {
+        final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel().orElseThrow());
+        if (gameOpt.isEmpty() || gameOpt.get().getGameState().isFinal()) {
             if (commandInfo.getCommand().startsWith("!")) {
                 return DiscordMessage.newBuilder()
                         .withText("There is no active game, you cannot give a clue.")
@@ -44,25 +44,25 @@ public class ClueCommand implements ICommand {
             } else {
                 return Collections.emptySet();
             }
-        } else if (commandInfo.getArgs().length < 2) {
+        } else if (commandInfo.getArgCount() < 2) {
             return help().singleton();
         }
 
         final CodeNames game = gameOpt.get();
-        final int lastIndex = commandInfo.getArgs().length - 1;
+        final int lastIndex = commandInfo.getArgCount() - 1;
         final Optional<Integer> count = commandInfo.getIntArg(lastIndex);
-        if (!count.isPresent()) {
+        if (count.isEmpty()) {
             return help().singleton();
         }
 
         final String clue = Arrays.stream(commandInfo.getArgs()).limit(commandInfo.getArgs().length - 1)
                 .collect(Collectors.joining(" "));
         try {
-            final Player clueGiver = new Player(commandInfo.getUser(), commandInfo.getUserName());
+            final Player clueGiver = new Player(commandInfo.getMember().orElseThrow());
             final int numGuesses = game.giveClue(clueGiver, clue, count.get());
-            store.storeGame(commandInfo.getChannel(), game);
+            store.storeGame(commandInfo.getChannel().orElseThrow(), game);
             final String mentions = game.getActiveTeam().getGuessers().stream()
-                    .map(t -> t.getUser().mention(true))
+                    .map(t -> t.getUser().getNicknameMention())
                     .collect(Collectors.joining(" "));
             return DiscordMessage.newBuilder()
                     .withText(String.format("The clue is `%s`. `%s` has %d guesses.",

@@ -19,7 +19,6 @@ import com.gmo.discord.hanyu.bot.api.entities.TranslationRequest;
 import com.gmo.discord.hanyu.bot.api.entities.TranslationResponse;
 import com.gmo.discord.hanyu.bot.api.entities.Transliteration;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;

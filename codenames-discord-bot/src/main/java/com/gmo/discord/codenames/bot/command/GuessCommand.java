@@ -11,15 +11,16 @@ import com.gmo.discord.codenames.bot.exception.GamePlayException;
 import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.output.CodeNamesToPng;
 import com.gmo.discord.codenames.bot.store.CodeNamesStore;
+import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
-import com.gmo.discord.support.command.ICommand;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
+import discord4j.core.object.entity.Member;
 
 /**
  * @author tedelen
  */
-public class GuessCommand implements ICommand {
+public class GuessCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("guess", "!guess");
 
     private final CodeNamesStore store;
@@ -29,14 +30,14 @@ public class GuessCommand implements ICommand {
     }
 
     @Override
-    public boolean canHandle(final CommandInfo commandInfo) {
+    public boolean canExecute(final CommandInfo commandInfo) {
         return TRIGGER.contains(commandInfo.getCommand().toLowerCase());
     }
 
     @Override
     public Iterable<DiscordMessage> execute(final CommandInfo commandInfo) {
-        final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel());
-        if (!gameOpt.isPresent() || gameOpt.get().getGameState().isFinal()) {
+        final Optional<CodeNames> gameOpt = store.getGame(commandInfo.getChannel().orElseThrow());
+        if (gameOpt.isEmpty() || gameOpt.get().getGameState().isFinal()) {
             if (commandInfo.getCommand().startsWith("!")) {
                 return DiscordMessage.newBuilder()
                         .withText("There is no active game, you cannot guess.")
@@ -51,29 +52,30 @@ public class GuessCommand implements ICommand {
         final CodeNames codeNames = gameOpt.get();
         final String guess = String.join(" ", commandInfo.getArgs());
         try {
-            final Player guesser = new Player(commandInfo.getUser(), commandInfo.getUserName());
+            final Member member = commandInfo.getMember().orElseThrow();
+            final Player guesser = new Player(member);
             final int numGuesses = codeNames.revealCard(guesser, guess);
             final String resultMessage;
             if (numGuesses == 0) {
                 if (codeNames.getGameState().isFinal()) {
                     final Team winner = codeNames.getWinner().orElseThrow(() -> new IllegalStateException("Game is over but no winner?"));
-                    if (winner.getPlayers().stream().map(Player::getUser).anyMatch(t->t.equals(commandInfo.getUser()))) {
+                    if (winner.getPlayers().stream().map(Player::getUser).anyMatch(t -> t.equals(member))) {
                         resultMessage = String.format("Nice! %s team wins!", winner.getType());
                     } else if (codeNames.assassinRevealed()) {
-                        resultMessage = String.format("LMAO! %s got assassinated. %s team wins!", commandInfo.getUserName(), winner.getType());
+                        resultMessage = String.format("LMAO! %s got assassinated. %s team wins!", guesser.getDisplayName(), winner.getType());
                     } else {
-                        resultMessage = String.format("%s handed the game away. %s team wins!", commandInfo.getUserName(), winner.getType());
+                        resultMessage = String.format("%s handed the game away. %s team wins!", guesser.getDisplayName(), winner.getType());
                     }
                 } else {
                     resultMessage = "Great. Now it's " +
                             codeNames.getActiveTeam().getType() + "'s turn. " +
-                            codeNames.getActiveTeam().getClueGiver().getUser().mention(true) +
+                            codeNames.getActiveTeam().getClueGiver().getUser().getNicknameMention() +
                             ", give a clue when you're ready with `!clue <word> <count>`.";
                 }
             } else {
                 resultMessage = "Good guess. You have " + numGuesses + " guesses remaining. Use `!guess <word>` or `!pass`";
             }
-            store.storeGame(commandInfo.getChannel(), codeNames);
+            store.storeGame(commandInfo.getChannel().orElseThrow(), codeNames);
             final ImmutableList.Builder<DiscordMessage> result = ImmutableList.builder();
             result.add(DiscordMessage.newBuilder()
                     .withContent(CodeNamesToPng.INSTANCE.getPngBytes(codeNames.map(), codeNames.getGameState().isFinal()))

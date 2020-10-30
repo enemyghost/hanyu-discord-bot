@@ -7,14 +7,18 @@ import com.gmo.matchup.analyzer.api.entities.reference.Sport;
 import com.gmo.matchup.api.client.MatchupApiClient;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.gmo.discord.matchups.bot.util.StringUtils.oddsString;
 import static com.gmo.discord.matchups.bot.util.StringUtils.pad;
@@ -22,7 +26,11 @@ import static com.gmo.discord.matchups.bot.util.StringUtils.padFront;
 import static com.gmo.discord.matchups.bot.util.StringUtils.spreadString;
 
 public class MatchupCommand implements Command {
-    private static final List<String> TRIGGER = ImmutableList.of("!matchup", "!nfl", "!ncaaf");
+    @SuppressWarnings("UnstableApiUsage")
+    private static final List<String> TRIGGER = Streams.concat(Stream.of("!matchup"), Arrays.stream(Sport.values())
+            .map(Sport::getSportName)
+            .map(s -> "!" + s))
+            .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     private static final String USAGE = "`!{sport} {index}`";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MMMM dd, yyyy h:mma");
 

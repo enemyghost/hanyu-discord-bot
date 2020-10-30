@@ -1,22 +1,22 @@
 package com.gmo.discord.codenames.bot.entities;
 
-import java.util.Objects;
+import discord4j.core.object.entity.Member;
 
-import sx.blah.discord.handle.obj.IUser;
+import java.util.Objects;
 
 /**
  * @author tedelen
  */
 public class Player {
-    private final IUser user;
+    private final Member user;
     private final String displayName;
 
-    public Player(final IUser user, final String displayName) {
+    public Player(final Member user) {
         this.user = Objects.requireNonNull(user);
-        this.displayName = Objects.requireNonNull(displayName);
+        this.displayName = user.getDisplayName();
     }
 
-    public IUser getUser() {
+    public Member getUser() {
         return user;
     }
 
