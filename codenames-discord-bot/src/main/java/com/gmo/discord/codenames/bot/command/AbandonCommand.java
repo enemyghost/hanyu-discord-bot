@@ -38,7 +38,7 @@ public class AbandonCommand implements Command {
                         .build().singleton();
             }
 
-            store.deleteGameLobby(commandInfo.getChannel().orElseThrow());
+            store.deleteGame(commandInfo.getChannel().orElseThrow());
             return DiscordMessage.newBuilder()
                     .withText("Alright, quitter. The game has been deleted. Start a new game with `!chodes`")
                     .build()
