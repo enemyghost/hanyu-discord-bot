@@ -8,6 +8,8 @@ import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -16,11 +18,13 @@ import java.util.stream.Collectors;
 /**
  * @author tedelen
  */
+@Component
 public class CurrentStateCommand implements Command {
     private static final String TRIGGER = "!board";
 
     private final CodeNamesStore store;
 
+    @Autowired
     public CurrentStateCommand(final CodeNamesStore store) {
         this.store = Objects.requireNonNull(store);
     }

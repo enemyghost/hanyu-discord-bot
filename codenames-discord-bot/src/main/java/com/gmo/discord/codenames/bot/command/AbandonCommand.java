@@ -10,15 +10,19 @@ import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author tedelen
  */
+@Component
 public class AbandonCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("!!abandon", "!abandon");
 
     private final CodeNamesStore store;
 
+    @Autowired
     public AbandonCommand(final CodeNamesStore store) {
         this.store = Objects.requireNonNull(store);
     }

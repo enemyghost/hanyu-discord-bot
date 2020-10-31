@@ -1,5 +1,9 @@
 package com.gmo.discord.codenames.bot.store;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.Resources;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -7,10 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.Resources;
 
 public class RandomWordsFromFileMapSupplier implements Supplier<Collection<String>> {
     private final List<String> words;

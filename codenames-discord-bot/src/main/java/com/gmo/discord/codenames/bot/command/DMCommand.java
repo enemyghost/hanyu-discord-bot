@@ -11,6 +11,8 @@ import com.gmo.discord.support.message.Color;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.gmo.discord.support.message.Embed;
 import com.google.common.collect.ImmutableList;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -19,6 +21,8 @@ import java.io.UncheckedIOException;
 /**
  * @author tedelen
  */
+@Component
+@Profile("dev")
 public class DMCommand implements Command {
     @Override
     public boolean canExecute(CommandInfo commandInfo) {
@@ -33,7 +37,6 @@ public class DMCommand implements Command {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-//        return List.of();
 
         return ImmutableList.of(
                 DiscordMessage.newBuilder()

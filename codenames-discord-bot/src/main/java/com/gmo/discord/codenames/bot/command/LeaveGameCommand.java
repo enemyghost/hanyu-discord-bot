@@ -6,16 +6,20 @@ import com.gmo.discord.codenames.bot.store.CodeNamesStore;
 import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
 import com.gmo.discord.support.message.DiscordMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Component
 public class LeaveGameCommand implements Command {
     private static final String TRIGGER = "!leave";
 
     private final CodeNamesStore store;
 
+    @Autowired
     public LeaveGameCommand(final CodeNamesStore store) {
         this.store = Objects.requireNonNull(store);
     }

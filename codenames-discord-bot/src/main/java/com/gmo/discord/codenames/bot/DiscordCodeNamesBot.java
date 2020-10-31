@@ -1,17 +1,5 @@
 package com.gmo.discord.codenames.bot;
 
-import com.gmo.discord.codenames.bot.command.AbandonCommand;
-import com.gmo.discord.codenames.bot.command.ClueCommand;
-import com.gmo.discord.codenames.bot.command.CurrentStateCommand;
-import com.gmo.discord.codenames.bot.command.DMCommand;
-import com.gmo.discord.codenames.bot.command.GuessCommand;
-import com.gmo.discord.codenames.bot.command.JoinGameCommand;
-import com.gmo.discord.codenames.bot.command.LeaveGameCommand;
-import com.gmo.discord.codenames.bot.command.NewGameCommand;
-import com.gmo.discord.codenames.bot.command.NextGameCommand;
-import com.gmo.discord.codenames.bot.command.PassCommand;
-import com.gmo.discord.codenames.bot.command.StartGameCommand;
-import com.gmo.discord.codenames.bot.store.CodeNamesStore;
 import com.gmo.discord.support.command.Command;
 import com.gmo.discord.support.command.CommandInfo;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -23,6 +11,8 @@ import discord4j.discordjson.json.ImmutableMessageCreateRequest;
 import discord4j.rest.util.MultipartRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
@@ -31,24 +21,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+@Service
 public class DiscordCodeNamesBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordCodeNamesBot.class);
 
     private final List<Command> commands;
 
-    public DiscordCodeNamesBot(final CodeNamesStore gameStore) {
-        this.commands = List.of(
-                new AbandonCommand(gameStore),
-                new ClueCommand(gameStore),
-                new CurrentStateCommand(gameStore),
-                new GuessCommand(gameStore),
-                new JoinGameCommand(gameStore),
-                new LeaveGameCommand(gameStore),
-                new NewGameCommand(gameStore),
-                new NextGameCommand(gameStore),
-                new PassCommand(gameStore),
-                new StartGameCommand(gameStore),
-                new DMCommand());
+    @Autowired
+    public DiscordCodeNamesBot(final List<Command> commands) {
+        this.commands = List.copyOf(commands);
     }
 
     public Mono<Void> onMessage(final MessageCreateEvent event) {

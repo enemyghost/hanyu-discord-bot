@@ -16,10 +16,12 @@ import com.gmo.discord.support.command.CommandInfo;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.google.common.collect.ImmutableList;
 import discord4j.core.object.entity.Member;
+import org.springframework.stereotype.Component;
 
 /**
  * @author tedelen
  */
+@Component
 public class GuessCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("guess", "!guess");
 

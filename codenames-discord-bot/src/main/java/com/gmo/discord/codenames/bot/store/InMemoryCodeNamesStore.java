@@ -3,6 +3,7 @@ package com.gmo.discord.codenames.bot.store;
 import com.gmo.discord.codenames.bot.game.CodeNames;
 import com.gmo.discord.codenames.bot.game.CodeNamesBuilder;
 import discord4j.core.object.entity.channel.Channel;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Optional;
 /**
  * @author tedelen
  */
+@Repository
 public class InMemoryCodeNamesStore implements CodeNamesStore {
     private Map<Channel, CodeNames> activeGames = new HashMap<>();
     private Map<Channel, CodeNamesBuilder> activeLobbies = new HashMap<>();

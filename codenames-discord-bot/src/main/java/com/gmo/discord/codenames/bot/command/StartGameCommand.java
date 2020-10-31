@@ -12,16 +12,20 @@ import com.gmo.discord.support.message.Color;
 import com.gmo.discord.support.message.DiscordMessage;
 import com.gmo.discord.support.message.Embed;
 import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Component
 public class StartGameCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("!deal", "!start");
 
     private final CodeNamesStore store;
 
+    @Autowired
     public StartGameCommand(final CodeNamesStore store) {
         this.store = Objects.requireNonNull(store);
     }
