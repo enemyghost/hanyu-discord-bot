@@ -7,6 +7,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+/**
+ * Contains metadata for a message to be sent to the discord channel as a result of attempting to execute a command.
+ *
+ * Specify {@code content} to send an attachment; {@code embed} to send an embedded message; or
+ * {@code text} to send a text message.
+ *
+ * {@code replacePrevious} flag, if set, indicates the previous message sent by the bot should be edited rather
+ * than sending a new message.
+ *
+ * Specify a {@code directRecipient} to send a private message to the recipient, rather than sending the message
+ * to the entire channel.
+ */
 public class DiscordMessage {
     private final String text;
     private final byte[] content;
@@ -54,6 +66,11 @@ public class DiscordMessage {
                 .withDirectRecipient(copy.directRecipient);
     }
 
+    /**
+     * Returns this message wrapped in a singleton collection
+     *
+     * @return singleton collection containing only this message
+     */
     public Collection<DiscordMessage> singleton() {
         return Collections.singleton(this);
     }

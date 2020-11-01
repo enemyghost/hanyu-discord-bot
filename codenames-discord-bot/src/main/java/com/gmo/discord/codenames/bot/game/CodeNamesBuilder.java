@@ -14,6 +14,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 /**
+ * Builds a new code names game
+ *
  * @author tedelen
  */
 public class CodeNamesBuilder {
@@ -27,8 +29,8 @@ public class CodeNamesBuilder {
         }
     }
 
-    private Team redTeam;
-    private Team blueTeam;
+    private final Team redTeam;
+    private final Team blueTeam;
     private TeamType firstTeam;
 
     public CodeNamesBuilder() {
@@ -53,11 +55,24 @@ public class CodeNamesBuilder {
         return new CodeNames(redTeam, blueTeam, WORDS_SUPPLIER, firstTeam);
     }
 
+    /**
+     * Adds player to the team with the fewest players.
+     *
+     * @param player {@link Player} to add
+     * @return this builder
+     */
     public CodeNamesBuilder addPlayer(final Player player) {
         final TeamType smallerTeam = redTeam.size() <= blueTeam.size() ? TeamType.RED : TeamType.BLUE;
         return addPlayer(player, smallerTeam);
     }
 
+    /**
+     * Adds player to the given team
+     *
+     * @param player {@link Player} to add
+     * @param teamType team to add player to
+     * @return this builder
+     */
     public CodeNamesBuilder addPlayer(final Player player, final TeamType teamType) {
         if (getPlayers().contains(player)) {
             return this;
@@ -72,6 +87,12 @@ public class CodeNamesBuilder {
         return this;
     }
 
+    /**
+     * Removes player from the game
+     *
+     * @param player {@link Player} to remove
+     * @return this builder
+     */
     public CodeNamesBuilder removePlayer(final Player player) {
         if (!redTeam.removePlayer(player)) {
             blueTeam.removePlayer(player);
@@ -79,6 +100,12 @@ public class CodeNamesBuilder {
         return this;
     }
 
+    /**
+     * Sets the team who will give clues first
+     *
+     * @param firstTeam first team to give clues
+     * @return this builder
+     */
     public CodeNamesBuilder withFirstTeam(final TeamType firstTeam) {
         this.firstTeam = firstTeam;
         return this;

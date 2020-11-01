@@ -5,6 +5,9 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * Contains configuration properties for the codenames discord bot application
+ */
 @ConfigurationProperties(prefix = "codenames")
 @Validated
 public class CodeNamesBotProperties {

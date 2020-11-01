@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * {@link Command} for beginning a new game with the same teams after a game is completed
+ *
  * @author tedelen
  */
 @Component

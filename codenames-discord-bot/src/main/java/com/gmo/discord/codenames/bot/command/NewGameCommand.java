@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * {@link Command} for starting a new game
+ *
  * @author tedelen
  */
 @Component

@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Represents a command sent by a user in a discord channel
+ */
 public class CommandInfo {
     private final Member member;
     private final String message;

@@ -18,6 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * {@link Command} for passing the current turn before all allowed guesses have been made
+ *
  * @author tedelen
  */
 @Component

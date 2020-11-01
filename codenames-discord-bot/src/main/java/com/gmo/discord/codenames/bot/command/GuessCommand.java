@@ -19,6 +19,8 @@ import discord4j.core.object.entity.Member;
 import org.springframework.stereotype.Component;
 
 /**
+ * {@link Command} for submitting a guess
+ *
  * @author tedelen
  */
 @Component

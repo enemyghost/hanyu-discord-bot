@@ -5,6 +5,8 @@ import discord4j.core.object.entity.Member;
 import java.util.Objects;
 
 /**
+ * Represents a code names player
+ *
  * @author tedelen
  */
 public class Player {

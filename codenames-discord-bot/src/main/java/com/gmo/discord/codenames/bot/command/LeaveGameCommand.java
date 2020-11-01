@@ -13,6 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * {@link Command} for leaving a game
+ *
+ * @author tedelen
+ */
 @Component
 public class LeaveGameCommand implements Command {
     private static final String TRIGGER = "!leave";

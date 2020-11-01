@@ -12,15 +12,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+/**
+ * Code Names Bot entry point
+ *
+ * @author tedelen
+ */
 @SpringBootApplication
 @EnableConfigurationProperties(CodeNamesBotProperties.class)
-public class Application implements ApplicationRunner {
+public class CodeNamesDiscordBot implements ApplicationRunner {
     private final CodeNamesBotProperties codeNamesBotProperties;
-    private final DiscordCodeNamesBot discordCodeNamesBot;
+    private final CodeNamesCommandDispatcher discordCodeNamesBot;
 
     @Autowired
-    public Application(final CodeNamesBotProperties codeNamesBotProperties,
-                       final DiscordCodeNamesBot discordCodeNamesBot) {
+    public CodeNamesDiscordBot(final CodeNamesBotProperties codeNamesBotProperties,
+                               final CodeNamesCommandDispatcher discordCodeNamesBot) {
         this.codeNamesBotProperties = codeNamesBotProperties;
         this.discordCodeNamesBot = discordCodeNamesBot;
     }
@@ -40,6 +45,6 @@ public class Application implements ApplicationRunner {
     }
 
     public static void main(final String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(CodeNamesDiscordBot.class, args);
     }
 }

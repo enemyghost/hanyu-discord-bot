@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * {@link Command} for joining a game if it is in the lobby state
+ *
  * @author tedelen
  */
 @Component

@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * {@link Command} to output the current state of the game
+ *
  * @author tedelen
  */
 @Component

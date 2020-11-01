@@ -19,6 +19,8 @@ import java.io.UncheckedIOException;
 
 
 /**
+ * {@link Command} used for testing message sending in development.
+ *
  * @author tedelen
  */
 @Component

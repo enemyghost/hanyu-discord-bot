@@ -4,6 +4,9 @@ import java.util.function.Function;
 
 import com.gmo.discord.codenames.bot.entities.Card;
 
+/**
+ * Serializes game board as a string
+ */
 public class CodeNamesStringOutput implements Function<Card[][], String> {
     public static final CodeNamesStringOutput INSTANCE = new CodeNamesStringOutput();
 

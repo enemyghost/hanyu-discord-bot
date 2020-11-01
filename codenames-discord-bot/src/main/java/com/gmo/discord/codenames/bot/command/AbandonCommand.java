@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * {@link Command} to abandon the current game.
+ *
  * @author tedelen
  */
 @Component

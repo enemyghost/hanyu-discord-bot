@@ -10,12 +10,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
+ * {@link CodeNamesStore} which stores all active games and lobbies in an in-memory map.
+ *
  * @author tedelen
  */
 @Repository
 public class InMemoryCodeNamesStore implements CodeNamesStore {
-    private Map<Channel, CodeNames> activeGames = new HashMap<>();
-    private Map<Channel, CodeNamesBuilder> activeLobbies = new HashMap<>();
+    private final Map<Channel, CodeNames> activeGames = new HashMap<>();
+    private final Map<Channel, CodeNamesBuilder> activeLobbies = new HashMap<>();
 
     @Override
     public Optional<CodeNames> getGame(final Channel channel) {

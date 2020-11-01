@@ -22,6 +22,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
+/**
+ * Serializes game board as a PNG
+ */
 public class CodeNamesToPng {
     public static final CodeNamesToPng INSTANCE = new CodeNamesToPng();
 

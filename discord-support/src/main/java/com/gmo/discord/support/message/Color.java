@@ -1,5 +1,8 @@
 package com.gmo.discord.support.message;
 
+/**
+ * Colors supported by Discord Embeds, containing the integer value required by discord.
+ */
 public enum Color {
     DEFAULT(0),
     AQUA(1752220),

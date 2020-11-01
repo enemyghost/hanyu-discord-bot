@@ -44,7 +44,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.gmo.discord.codenames.bot.Application</mainClass>
+                    <mainClass>com.gmo.discord.codenames.bot.CodeNamesDiscordBot</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.springframework.boot</groupId>

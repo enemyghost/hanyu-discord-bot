@@ -14,6 +14,11 @@ import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * The code names game board
+ *
+ * @author tedelen
+ */
 public class GameBoard {
     private final TeamType firstTeam;
     private final Card[][] gameMap;

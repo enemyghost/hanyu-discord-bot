@@ -3,6 +3,8 @@ package com.gmo.discord.codenames.bot.entities;
 import java.util.Objects;
 
 /**
+ * Represents a code word card assigned to a specific team
+ *
  * @author tedelen
  */
 public class Card {

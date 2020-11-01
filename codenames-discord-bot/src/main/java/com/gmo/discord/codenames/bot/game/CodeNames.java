@@ -16,7 +16,15 @@ import com.gmo.discord.codenames.bot.exception.GamePlayException;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
+/**
+ * The code names game engine.
+ *
+ * @author tedelen
+ */
 public class CodeNames {
+    /**
+     * Represents the state of the code names game, including whose turn it is and whether the game has ended.
+     */
     public enum State {
         RED_TURN(TeamType.RED, false),
         BLUE_TURN(TeamType.BLUE, false),
@@ -30,14 +38,30 @@ public class CodeNames {
             this.isFinal = isFinal;
         }
 
+        /**
+         * True if the game is over
+         *
+         * @return true if the game is over, false otherwise
+         */
         public boolean isFinal() {
             return isFinal;
         }
 
+        /**
+         * The team whose turn it is
+         *
+         * @return team whose turn it is
+         */
         public TeamType getTeam() {
             return team;
         }
 
+        /**
+         * Returns the winning state for the opposite of the given team
+         *
+         * @param losingTeam the team that lost
+         * @return a final state, with the opposite team set as winner
+         */
         static State winningState(final TeamType losingTeam) {
             if (losingTeam == TeamType.RED) {
                 return BLUE_WON;
@@ -46,6 +70,12 @@ public class CodeNames {
             }
         }
 
+        /**
+         * Progresses the game to the opposite team's turn
+         *
+         * @param failingTeam the team whose turn has ended
+         * @return a non-final state, with the opposite teams turn
+         */
         static State switchTeams(final TeamType failingTeam) {
             if (failingTeam == TeamType.RED) {
                 return BLUE_TURN;
@@ -64,6 +94,14 @@ public class CodeNames {
     private int guessesRemaining;
     private Team winner;
 
+    /**
+     * Ctor. Initializes a new code name with the given teams
+     *
+     * @param redTeam the red team
+     * @param blueTeam the blue team
+     * @param wordSupplier the game's word supplier used for creating a new game board
+     * @param firstTeam the team who will give clues first
+     */
     public CodeNames(final Team redTeam,
                      final Team blueTeam,
                      final Supplier<Collection<String>> wordSupplier,
@@ -81,6 +119,16 @@ public class CodeNames {
         this.activeClue = null;
     }
 
+    /**
+     * Determines if the guessed word can be revealed. Effectively, if the given {@link Player} is allowed to guess
+     * in the game's current state and the word is a valid, unrevealed word on the board.
+     *
+     * Should be called before {@link #revealCard(Player, String)} to ensure the move is valid.
+     *
+     * @param guesser {@link Player} trying to make a guess
+     * @param word the player's guess
+     * @return true if the guess is currently allowed and the card can be revealed
+     */
     public boolean canReveal(final Player guesser, final String word) {
         return !gameState.isFinal()
                 && guesserTeam(guesser).isPresent()
@@ -91,6 +139,15 @@ public class CodeNames {
                         || (gameState == State.BLUE_TURN && blueTeam.getGuessers().contains(guesser)));
     }
 
+    /**
+     * Reveals the card with the given word. To avoid exception, call {@link #canReveal(Player, String)} first
+     * to ensure the play is valid.
+     *
+     * @param guesser {@link Player} making the guess
+     * @param word the player's guess
+     * @return the number of guesses remaining
+     * @throws GamePlayException if the game is not in a valid state for {@code guesser} to be guessing {@code word}
+     */
     public synchronized int revealCard(final Player guesser, final String word) throws GamePlayException {
         if (gameState.isFinal()) {
             throw new GamePlayException("Game is over, no more guessing.");
@@ -146,6 +203,15 @@ public class CodeNames {
         return guessesRemaining;
     }
 
+    /**
+     * Determines if the given player can give the provided {@code clue} and {@code count}. Effectively, if this
+     * player is the active clue giver, the clue is not a card on the board, and the count is positive.
+     *
+     * @param clueGiver {@link Player} attempting to give a clue
+     * @param clue the player's clue
+     * @param count the number provided with the player's clue
+     * @return true if the clue is currently allowed, false otherwise
+     */
     public boolean canGiveClue(final Player clueGiver, final String clue, final int count) {
         final Optional<Team> team = clueGiverTeam(clueGiver);
         return !gameState.isFinal()
@@ -156,6 +222,15 @@ public class CodeNames {
                 && guessesRemaining == 0;
     }
 
+    /**
+     * Give the next clue in the game.
+     *
+     * @param clueGiver the {@link Player} providing the clue
+     * @param clue the player's clue
+     * @param count the number provided with the player's clue
+     * @return the number of guesses remaining
+     * @throws GamePlayException if the game is not in a valid state for {@code clueGiver} to give the {@code clue}
+     */
     public synchronized int giveClue(final Player clueGiver, final String clue, final int count) throws GamePlayException {
         if (gameState.isFinal()) {
             throw new GamePlayException("Game is over, no more guessing");
@@ -178,6 +253,12 @@ public class CodeNames {
         }
     }
 
+    /**
+     * Determines if the given {@link Player} is allowed to pass. Effectively, if this player is an active guesser.
+     *
+     * @param guesser {@link Player} trying to pass
+     * @return true if the player is allowed to pass
+     */
     public boolean canPass(final Player guesser) {
         return !gameState.isFinal()
                 && guesserTeam(guesser).isPresent()
@@ -185,6 +266,12 @@ public class CodeNames {
                 || (gameState == State.BLUE_TURN && blueTeam.getGuessers().contains(guesser)));
     }
 
+    /**
+     * Pass the current turn to the other team.
+     *
+     * @param guesser {@link Player} trying to pass
+     * @throws GamePlayException if the player is not allowed to pass
+     */
     public synchronized void pass(final Player guesser) throws GamePlayException {
         if (gameState.isFinal()) {
             throw new GamePlayException("The game is over, you cannot pass.");

@@ -10,6 +10,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+/**
+ * Metadata for a Discord Embed message
+ */
 public class Embed {
     private final String title;
     private final Color color;

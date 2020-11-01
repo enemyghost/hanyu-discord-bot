@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * {@link Command} for starting a game if both teams are complete
+ *
+ * @author tedelen
+ */
 @Component
 public class StartGameCommand implements Command {
     private static final List<String> TRIGGER = ImmutableList.of("!deal", "!start");
