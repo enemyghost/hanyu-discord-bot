@@ -5,17 +5,17 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
 
-@ConfigurationProperties
+@ConfigurationProperties(prefix = "codenames")
 @Validated
 public class CodeNamesBotProperties {
     @NotBlank
-    private String codenamesBotToken;
+    private String botToken;
 
-    public String getCodenamesBotToken() {
-        return codenamesBotToken;
+    public String getBotToken() {
+        return botToken;
     }
 
-    public void setCodenamesBotToken(final String codenamesBotToken) {
-        this.codenamesBotToken = codenamesBotToken;
+    public void setBotToken(final String botToken) {
+        this.botToken = botToken;
     }
 }
